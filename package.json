@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-websocket",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Protocol plugin adding Websocket support to Kuzzle",
   "main": "./lib/index.js",
   "repository": {
