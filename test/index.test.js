@@ -19,7 +19,7 @@ describe('plugin implementation', function () {
     badChannel = 'aBadChannel';
 
   before(function () {
-    // stubbing socket.io
+    // stubbing websocket
     Plugin = proxyquire('../lib/index', {
       'ws': {
         Server: function(config) {
