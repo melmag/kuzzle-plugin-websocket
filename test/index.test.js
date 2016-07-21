@@ -174,7 +174,8 @@ describe('plugin implementation', function () {
         [goodChannel]: [goodId]
       };
       plugin.broadcast({
-        channel: goodChannel
+        channel: goodChannel,
+        payload: {}
       });
       should(sendSpy.callCount).be.eql(0);
     });
@@ -193,11 +194,12 @@ describe('plugin implementation', function () {
         }
       };
       plugin.broadcast({
+        id: goodId,
         channel: goodChannel,
-        payload: 'aPayload'
+        payload: {a: 'payload'}
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({a: 'payload', channel: goodChannel}));
     });
   });
 
@@ -231,10 +233,11 @@ describe('plugin implementation', function () {
       };
       plugin.notify({
         id: goodId,
-        payload: 'aPayload'
+        channel: goodChannel,
+        payload: {a: 'payload'}
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({a: 'payload', channel: goodChannel}));
     });
   });
 
