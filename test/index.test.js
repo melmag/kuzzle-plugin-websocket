@@ -81,7 +81,7 @@ describe('plugin implementation', function () {
       should(setBackend).be.null();
     });
 
-    it('should setup a mosca mqtt broker if not in dummy mode', function () {
+    it('should setup a websocket broker if not in dummy mode', function () {
       var ret = plugin.init(config, context, false);
 
       should(ret).be.eql(plugin);
