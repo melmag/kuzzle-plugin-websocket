@@ -81,7 +81,7 @@ describe('plugin implementation', function () {
       should(setBackend).be.null();
     });
 
-    it('should setup a mosca mqtt broker if not in dummy mode', function () {
+    it('should setup a websocket server if not in dummy mode', function () {
       var ret = plugin.init(config, context, false);
 
       should(ret).be.eql(plugin);
@@ -174,7 +174,8 @@ describe('plugin implementation', function () {
         [goodChannel]: [goodId]
       };
       plugin.broadcast({
-        channel: goodChannel
+        channel: goodChannel,
+        payload: {}
       });
       should(sendSpy.callCount).be.eql(0);
     });
@@ -194,10 +195,10 @@ describe('plugin implementation', function () {
       };
       plugin.broadcast({
         channel: goodChannel,
-        payload: 'aPayload'
+        payload: {some: 'data'}
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({some: 'data', room: goodChannel}));
     });
   });
 
@@ -231,10 +232,11 @@ describe('plugin implementation', function () {
       };
       plugin.notify({
         id: goodId,
-        payload: 'aPayload'
+        channel: goodChannel,
+        payload: {some: 'data'}
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({some: 'data', room: goodChannel}));
     });
   });
 
@@ -372,7 +374,7 @@ describe('plugin implementation', function () {
       config = {port: 1234},
       fakeRequestObject = {aRequest: 'Object'},
       requestObjectStub = sinon.stub().returns(fakeRequestObject),
-      executeStub = sinon.stub().callsArg(2),
+      executeStub = sinon.stub().callsArgWith(2, null, {requestId: 'foo'}),
       context = {constructors: {RequestObject: requestObjectStub}, accessors: {router: {execute: executeStub}}};
 
     beforeEach(() => {
@@ -418,7 +420,7 @@ describe('plugin implementation', function () {
       should(executeStub.firstCall.args[1]).be.eql('aConnection');
       should(executeStub.firstCall.args[2]).be.Function();
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify(undefined));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({requestId: 'foo', room: 'foo'}));
     });
   });
 
