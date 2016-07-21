@@ -24,9 +24,7 @@
   },
   "pluginInfo": {
     "defaultConfig": {
-      "loadBalancerUrl": "ws://loadbalancer:7331",
-      "retryInterval": 1000,
-      "loadedBy": "server"
+      "port": 5713
     }
   },
   "license": "Apache-2.0",
