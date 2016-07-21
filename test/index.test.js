@@ -174,8 +174,7 @@ describe('plugin implementation', function () {
         [goodChannel]: [goodId]
       };
       plugin.broadcast({
-        channel: goodChannel,
-        payload: {}
+        channel: goodChannel
       });
       should(sendSpy.callCount).be.eql(0);
     });
@@ -195,10 +194,10 @@ describe('plugin implementation', function () {
       };
       plugin.broadcast({
         channel: goodChannel,
-        payload: {some: 'data'}
+        payload: 'aPayload'
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({some: 'data', room: goodChannel}));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
     });
   });
 
@@ -232,11 +231,10 @@ describe('plugin implementation', function () {
       };
       plugin.notify({
         id: goodId,
-        channel: goodChannel,
-        payload: {some: 'data'}
+        payload: 'aPayload'
       });
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({some: 'data', room: goodChannel}));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify('aPayload'));
     });
   });
 
@@ -374,7 +372,7 @@ describe('plugin implementation', function () {
       config = {port: 1234},
       fakeRequestObject = {aRequest: 'Object'},
       requestObjectStub = sinon.stub().returns(fakeRequestObject),
-      executeStub = sinon.stub().callsArgWith(2, null, {requestId: 'foo'}),
+      executeStub = sinon.stub().callsArg(2),
       context = {constructors: {RequestObject: requestObjectStub}, accessors: {router: {execute: executeStub}}};
 
     beforeEach(() => {
@@ -420,7 +418,7 @@ describe('plugin implementation', function () {
       should(executeStub.firstCall.args[1]).be.eql('aConnection');
       should(executeStub.firstCall.args[2]).be.Function();
       should(sendSpy.callCount).be.eql(1);
-      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify({requestId: 'foo', room: 'foo'}));
+      should(sendSpy.firstCall.args[0]).be.eql(JSON.stringify(undefined));
     });
   });
 
