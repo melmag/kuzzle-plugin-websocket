@@ -178,6 +178,7 @@ describe('plugin implementation', function () {
       };
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           }
@@ -215,6 +216,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           }
@@ -256,6 +258,7 @@ describe('plugin implementation', function () {
       };
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           },
@@ -275,6 +278,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           },
@@ -312,7 +316,9 @@ describe('plugin implementation', function () {
     it('should do nothing if channel does not exist', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
-        [goodId]: true
+        [goodId]:  {
+          alive: true
+        }
       };
       plugin.leaveChannel({
         id: goodId
@@ -324,6 +330,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           },
@@ -346,6 +353,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           },
@@ -370,6 +378,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           socket: {
             send: sendSpy
           },
@@ -403,7 +412,9 @@ describe('plugin implementation', function () {
     it('should do nothing if the data is undefined', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
-        [goodId]: true
+        [goodId]: {
+          alive: true
+        }
       };
       plugin.onClientMessage(badId, undefined);
       should(executeStub.callCount).be.eql(0);
@@ -413,7 +424,9 @@ describe('plugin implementation', function () {
     it('should do nothing if the client is unknown', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
-        [goodId]: true
+        [goodId]: {
+          alive: true
+        }
       };
       plugin.onClientMessage(badId, JSON.stringify('aPayload'));
       should(executeStub.callCount).be.eql(0);
@@ -424,6 +437,7 @@ describe('plugin implementation', function () {
       plugin.init(config, context, false);
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           connection: 'aConnection',
           socket: {
             send: sendSpy
@@ -473,26 +487,27 @@ describe('plugin implementation', function () {
         [goodChannel]: []
       };
       plugin.connectionPool = {
-        [goodId]: true
+        [goodId]: {
+          alive: true
+        }
       };
       plugin.socketPool = {
         [goodId]: true
       };
       plugin.onClientDisconnection(badId);
       should(removeConnectionSpy.callCount).be.eql(0);
-      should(plugin.connectionPool[goodId]).be.true();
+      should(plugin.connectionPool[goodId].alive).be.true();
       should(plugin.socketPool[goodId]).be.true();
     });
 
     it('should remove the client connection if it exists', function () {
-      var stub = sinon.stub(plugin, 'leaveChannel');
-
       plugin.init(config, context, false);
       plugin.channels = {
-        [goodChannel]: {[goodId]: true}
+        [goodChannel]: {[goodId]: true, 'foobar': true}
       };
       plugin.connectionPool = {
         [goodId]: {
+          alive: true,
           connection: 'aConnection',
           socket: {
             send: sendSpy
@@ -504,9 +519,29 @@ describe('plugin implementation', function () {
       plugin.onClientDisconnection(goodId);
       should(removeConnectionSpy.callCount).be.eql(1);
       should(plugin.connectionPool).be.deepEqual({});
-      should(stub.calledOnce).be.true();
-      should(stub.calledWith({id: goodId, channel: goodChannel}));
-      stub.reset();
+      should(plugin.channels).be.deepEqual({[goodChannel]: {foobar: true}});
+    });
+
+    it('should remove a channel entirely if the last connection leaves', function () {
+      plugin.init(config, context, false);
+      plugin.channels = {
+        [goodChannel]: {[goodId]: true}
+      };
+      plugin.connectionPool = {
+        [goodId]: {
+          alive: true,
+          connection: 'aConnection',
+          socket: {
+            send: sendSpy
+          },
+          channels: [goodChannel]
+        }
+      };
+
+      plugin.onClientDisconnection(goodId);
+      should(removeConnectionSpy.callCount).be.eql(1);
+      should(plugin.connectionPool).be.deepEqual({});
+      should(plugin.channels).be.deepEqual({});
     });
   });
 });
