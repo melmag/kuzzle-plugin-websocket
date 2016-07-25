@@ -1,6 +1,15 @@
 language: node_js
 node_js:
 - 4.2
+addons:
+  apt:
+    sources:
+      - ubuntu-toolchain-r-test
+    packages:
+      - gcc-4.9
+      - g++-4.9
+before_install:
+- export CC="gcc-4.9" CXX="g++-4.9"
 script:
 - npm test && cat ./coverage/lcov.info | ./node_modules/.bin/codecov
 notifications:
