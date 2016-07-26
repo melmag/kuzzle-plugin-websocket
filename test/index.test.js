@@ -163,7 +163,8 @@ describe('plugin implementation', function () {
     it('should do nothing if channel does not exist', function () {
       plugin.init(config, context, false);
       plugin.broadcast({
-        channel: badChannel
+        channels: [badChannel],
+        payload: {}
       });
       should(sendSpy.callCount).be.eql(0);
     });
@@ -186,7 +187,7 @@ describe('plugin implementation', function () {
       };
 
       plugin.broadcast({
-        channel: goodChannel,
+        channels: [goodChannel],
         payload: {some: 'data'}
       });
       should(sendSpy.callCount).be.eql(1);
@@ -207,7 +208,9 @@ describe('plugin implementation', function () {
     it('should do nothing if id does not exist', function () {
       plugin.init(config, context, false);
       plugin.notify({
-        id: badId
+        id: badId,
+        payload: {},
+        channels: [goodChannel]
       });
       should(sendSpy.callCount).be.eql(0);
     });
@@ -225,7 +228,7 @@ describe('plugin implementation', function () {
 
       plugin.notify({
         id: goodId,
-        channel: goodChannel,
+        channels: [goodChannel],
         payload: {some: 'data'}
       });
       should(sendSpy.callCount).be.eql(1);
@@ -254,7 +257,7 @@ describe('plugin implementation', function () {
     it('should add clientId to the channel if conditions are met', function () {
       plugin.init(config, context, false);
       plugin.channels = {
-        [goodChannel]: {}
+        [goodChannel]: { count: 0 }
       };
       plugin.connectionPool = {
         [goodId]: {
@@ -270,7 +273,7 @@ describe('plugin implementation', function () {
         channel: goodChannel
       });
       should(plugin.channels).be.deepEqual({
-        [goodChannel]: { [goodId]: true }
+        [goodChannel]: { [goodId]: true, count: 1 }
       });
     });
 
@@ -290,7 +293,7 @@ describe('plugin implementation', function () {
         channel: goodChannel
       });
       should(plugin.channels).be.deepEqual({
-        [goodChannel]: { [goodId]: true }
+        [goodChannel]: { [goodId]: true, count: 1 }
       });
     });
   });
@@ -361,7 +364,7 @@ describe('plugin implementation', function () {
         }
       };
       plugin.channels = {
-        [goodChannel]: {[goodId]: true, [badId]: true}
+        [goodChannel]: {[goodId]: true, [badId]: true, count: 2}
       };
       plugin.leaveChannel({
         id: goodId,
@@ -369,7 +372,7 @@ describe('plugin implementation', function () {
       });
 
       should(plugin.channels).be.deepEqual({
-        [goodChannel]: {[badId]: true}
+        [goodChannel]: {[badId]: true, count: 1}
       });
       should(plugin.connectionPool[goodId].channels.length).be.eql(0);
     });
@@ -503,7 +506,7 @@ describe('plugin implementation', function () {
     it('should remove the client connection if it exists', function () {
       plugin.init(config, context, false);
       plugin.channels = {
-        [goodChannel]: {[goodId]: true, 'foobar': true}
+        [goodChannel]: {[goodId]: true, 'foobar': true, count: 2}
       };
       plugin.connectionPool = {
         [goodId]: {
@@ -519,7 +522,7 @@ describe('plugin implementation', function () {
       plugin.onClientDisconnection(goodId);
       should(removeConnectionSpy.callCount).be.eql(1);
       should(plugin.connectionPool).be.deepEqual({});
-      should(plugin.channels).be.deepEqual({[goodChannel]: {foobar: true}});
+      should(plugin.channels).be.deepEqual({[goodChannel]: {foobar: true, count: 1}});
     });
 
     it('should remove a channel entirely if the last connection leaves', function () {
