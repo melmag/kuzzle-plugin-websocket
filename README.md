@@ -6,6 +6,8 @@
 
 Protocol plugin adding websocket support to Kuzzle.
 
+Requires Kuzzle 1.0.0-RC5 or higher.
+
 # Manifest
 
 This plugin doesn't need any right.
@@ -16,7 +18,7 @@ You can override the configuration usign the CLI utilitie in Kuzzle:
 
 | Name | Default value | Type | Description                 |
 |------|---------------|-----------|-----------------------------|
-| ``port`` | ``5713`` | Integer > 1024 | Network port to open |
+| ``port`` | ``7513`` | Integer > 1024 | Network port to open |
 
 # How to use
 
