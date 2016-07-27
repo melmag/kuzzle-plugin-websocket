@@ -4,13 +4,27 @@ node_js:
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
+    - ubuntu-toolchain-r-test
     packages:
-      - gcc-4.9
-      - g++-4.9
+    - gcc-4.9
+    - g++-4.9
 before_install:
 - export CC="gcc-4.9" CXX="g++-4.9"
 script:
 - npm test && cat ./coverage/lcov.info | ./node_modules/.bin/codecov
 notifications:
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/8e145155fbaaf37cffea
+    on_success: change
+    on_failure: always
+    on_start: never
   email: false
+deploy:
+  provider: npm
+  email: support@kuzzle.io
+  api_key:
+    secure: 1hOmpsbrxFW2N7ohG2NinYdr+Ie/REKvRnhCT6g8NCtbi1EuM+ArEHk9fpoQ7mCVpubMNJkeyc8lfd6qchzQhLF9RT7qpp+ymKootIQcpDTAQ1vtEp2k61/s74VdPNgij2fm8RKE5j5Zv5RAz49RY2Kk5jFPimf8hpkHXTskrR2Bc7p90cD/WJXJp4kLrjWrjOlCx2+ChxYVyLbZu22IVgrmB8PMDmPEUeYs93+k9S5a9eNIFSGhNvRnvBIlwlhuv22AQzI+zi6zoIIvzjNE3v2aafmCel+cZFhyesGqxk4TruUE6vVNx5t4r/5S/Nu2FzJFtGXwKRRJAgnD+LkW8yZNbHmNsvSZWn9SdjB7IKQ0GIBMxGxqx57+7VSR+cK/8yj8wLu+svfPl9GnBPRrDIBVUoUx2QyFAia2MRTqT4mL5yY3RT70qoa57lxh8KDCbd7mARamU3sLrwiyAJBXq/vN5wVdvHjzSpMxmw4w2wdVt63qjC1vR0AIaDEVNZbV/e+/ew21LkzE1mF8BkEN0VTfqrghehj5Qk/Gmon1mSVpesEDJIHKCJ1Y9PG8ReyxrQKXulgcKrR34nZoLkIJzV9NP2cbpY7WDRYOMYG9G7Sj5Of+thRrCguxBLtQuhbeILpc/MoL7gLAg0LOl5Q13xHZb6uPp+bFlW+aFPecOBo=
+  on:
+    repo: kuzzleio/kuzzle-plugin-websocket
+    branch: master
