@@ -6,6 +6,8 @@
 
 Protocol plugin adding websocket support to Kuzzle.
 
+Requires Kuzzle 1.0.0-RC5 or higher.
+
 # Manifest
 
 This plugin doesn't need any right.
@@ -16,11 +18,24 @@ You can override the configuration usign the CLI utilitie in Kuzzle:
 
 | Name | Default value | Type | Description                 |
 |------|---------------|-----------|-----------------------------|
-| ``port`` | ``5713`` | Integer > 1024 | Network port to open |
+| ``port`` | ``7513`` | Integer > 1024 | Network port to open |
+
+# How to use
+
+Kuzzle may send a multitude of messages to a client, either to respond to multiple asynchronous requests, or to notify events on client's subscriptions.  
+To allow a client to link a response to a request or to a subscription, Kuzzle normally features a room system for protocols allowing it.
+
+Since WebSocket messages do not support this feature natively, all messages sent through this protocol contain an additional `room` attribute at the root of the message structure. Clients connecting to Kuzzle using this protocol must use this field to dispatch incoming messages to the right parts of an application.
+
+This `room` attribute is either:
+
+* a request `requestId`, for request responses
+* a `channel` (see [Kuzzle subscriptions](http://kuzzle.io/api-reference/#on)), for notifications on subscriptions
+
 
 # How to create a plugin
 
-See [Kuzzle documentation](https://github.com/kuzzleio/kuzzle/blob/master/docs/plugins.md) about plugin for more information about how to create your own plugin.
+See [Kuzzle documentation](http://kuzzle.io/guide/#plugins) about plugin for more information about how to create your own plugin.
 
 # About Kuzzle
 

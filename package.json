@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-websocket",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Protocol plugin adding Websocket support to Kuzzle",
   "main": "./lib/index.js",
   "repository": {
@@ -8,7 +8,9 @@
     "url": "git+https://github.com/kuzzleio/kuzzle-plugin-websocket.git"
   },
   "scripts": {
-    "test": "istanbul cover _mocha"
+    "lint": "eslint lib/*.js test/*.js",
+    "unit-tests": "istanbul cover _mocha",
+    "test": "npm run-script lint && npm run-script unit-tests"
   },
   "keywords": [
     "kuzzle",
@@ -24,15 +26,14 @@
   },
   "pluginInfo": {
     "defaultConfig": {
-      "loadBalancerUrl": "ws://loadbalancer:7331",
-      "retryInterval": 1000,
-      "loadedBy": "server"
+      "port": 7513
     }
   },
   "license": "Apache-2.0",
   "dependencies": {
-    "async": "^2.0.0-rc.5",
+    "bufferutil": "^1.2.1",
     "node-uuid": "^1.4.7",
+    "utf-8-validate": "^1.2.1",
     "ws": "^1.1.1"
   },
   "devDependencies": {
