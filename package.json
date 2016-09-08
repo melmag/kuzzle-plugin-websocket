@@ -1,6 +1,6 @@
 {
   "name": "kuzzle-plugin-websocket",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Protocol plugin adding Websocket support to Kuzzle",
   "main": "./lib/index.js",
   "repository": {
@@ -38,16 +38,16 @@
   },
   "devDependencies": {
     "codecov": "^1.0.1",
-    "eslint": "3.0.1",
-    "istanbul": "0.4.4",
+    "eslint": "3.4.0",
+    "istanbul": "0.4.5",
     "istanbul-middleware": "0.2.2",
-    "mocha": "2.5.3",
+    "mocha": "3.0.2",
     "mock-require": "^1.3.0",
     "proxyquire": "^1.7.10",
     "rewire": "2.5.2",
-    "should": "9.0.2",
+    "should": "11.1.0",
     "should-sinon": "0.0.5",
-    "sinon": "1.17.4",
+    "sinon": "1.17.5",
     "sinon-as-promised": "^4.0.0"
   },
   "maintainers": [
