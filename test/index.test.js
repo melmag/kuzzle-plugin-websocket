@@ -154,7 +154,7 @@ describe('plugin implementation', function () {
 
     it('should reject and close the socket if creating a connection fails', done => {
       this.timeout(50);
-      newConnectionSpy.rejects({message: 'foobar'});
+      newConnectionSpy.rejects({status: 666, message: 'foobar'});
 
       plugin.init(config, context, false);
 
