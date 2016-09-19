@@ -101,13 +101,16 @@ describe('plugin implementation', function () {
       config = {port: 1234},
       onClientSpy = sinon.stub(),
       clientSocketMock = {
-        on: onClientSpy
+        on: onClientSpy,
+        close: sinon.stub()
       },
-      newConnectionSpy = sinon.stub().resolves({a: 'connection'}),
+      newConnectionSpy = sinon.stub(),
       context = {accessors: {router: {newConnection: newConnectionSpy}}};
 
     beforeEach(() => {
       onClientSpy.reset();
+      clientSocketMock.close.reset();
+      newConnectionSpy.reset();
     });
 
     it('should bind proper listeners', function (done) {
@@ -116,37 +119,54 @@ describe('plugin implementation', function () {
         clientMessageStub = sinon.stub(plugin, 'onClientMessage');
 
       this.timeout(50);
+      newConnectionSpy.resolves({a: 'connection'});
       plugin.init(config, context, false);
 
       plugin.onConnection(clientSocketMock);
 
-      should(onClientSpy.callCount).be.eql(3);
-      should(onClientSpy.firstCall.args[0]).be.eql('close');
-      should(onClientSpy.firstCall.args[1]).be.Function();
-      should(onClientSpy.secondCall.args[0]).be.eql('error');
-      should(onClientSpy.secondCall.args[1]).be.Function();
-      should(onClientSpy.thirdCall.args[0]).be.eql('message');
-      should(onClientSpy.thirdCall.args[1]).be.Function();
-
-      should(clientDisconnectionStub.callCount).be.eql(0);
-      should(clientMessageStub.callCount).be.eql(0);
-      onClientSpy.firstCall.args[1]();
-      should(clientDisconnectionStub.callCount).be.eql(1);
-      should(clientMessageStub.callCount).be.eql(0);
-      onClientSpy.secondCall.args[1]();
-      should(clientDisconnectionStub.callCount).be.eql(2);
-      should(clientMessageStub.callCount).be.eql(0);
-      onClientSpy.thirdCall.args[1]();
-      should(clientDisconnectionStub.callCount).be.eql(2);
-      should(clientMessageStub.callCount).be.eql(1);
-
-      clientDisconnectionStub.reset();
-      clientMessageStub.reset();
-
       setTimeout(() => {
+        should(onClientSpy.callCount).be.eql(3);
+        should(onClientSpy.firstCall.args[0]).be.eql('close');
+        should(onClientSpy.firstCall.args[1]).be.Function();
+        should(onClientSpy.secondCall.args[0]).be.eql('error');
+        should(onClientSpy.secondCall.args[1]).be.Function();
+        should(onClientSpy.thirdCall.args[0]).be.eql('message');
+        should(onClientSpy.thirdCall.args[1]).be.Function();
+
+        should(clientDisconnectionStub.callCount).be.eql(0);
+        should(clientMessageStub.callCount).be.eql(0);
+        onClientSpy.firstCall.args[1]();
+        should(clientDisconnectionStub.callCount).be.eql(1);
+        should(clientMessageStub.callCount).be.eql(0);
+        onClientSpy.secondCall.args[1]();
+        should(clientDisconnectionStub.callCount).be.eql(2);
+        should(clientMessageStub.callCount).be.eql(0);
+        onClientSpy.thirdCall.args[1]();
+        should(clientDisconnectionStub.callCount).be.eql(2);
+        should(clientMessageStub.callCount).be.eql(1);
+
+        clientDisconnectionStub.reset();
+        clientMessageStub.reset();
         should(Object.keys(plugin.connectionPool).length).be.eql(1);
         done();
       }, 20);
+    });
+
+    it('should reject and close the socket if creating a connection fails', done => {
+      this.timeout(50);
+      newConnectionSpy.rejects({status: 666, message: 'foobar'});
+
+      plugin.init(config, context, false);
+
+      plugin.onConnection(clientSocketMock);
+
+      setTimeout(() => {
+        should(onClientSpy.callCount).be.eql(0);
+        should(clientSocketMock.close.called).be.true();
+        should(clientSocketMock.close.calledWith(4503, 'foobar'));
+        done();
+      });
+
     });
   });
 
